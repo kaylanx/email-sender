@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation("com.sun.mail:javax.mail:1.6.2")
 }
 
 tasks.withType<KotlinCompile> {
