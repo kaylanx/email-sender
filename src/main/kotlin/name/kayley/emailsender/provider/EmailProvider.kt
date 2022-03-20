@@ -7,6 +7,6 @@ interface EmailProvider {
     fun sendEmail(
         emailModel: EmailModel,
         onMessageSent: () -> Unit,
-        onMessageFailed: (error: EmailError) -> Unit
+        onMessageFailed: (errors: List<EmailError>) -> Unit
     )
 }

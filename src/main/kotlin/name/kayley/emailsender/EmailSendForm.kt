@@ -26,7 +26,7 @@ fun EmailSendForm(
 
     val requestSent = remember { mutableStateOf(false) }
     val emailSent = remember { mutableStateOf(false) }
-    val emailSendError = remember { mutableStateOf<EmailError?>(null) }
+    val emailSendError = remember { mutableStateOf<List<EmailError>?>(null) }
 
     var emailBody by remember { mutableStateOf("") }
     var emailSubject by remember { mutableStateOf("") }
@@ -62,10 +62,11 @@ fun EmailSendForm(
         Spacer(modifier = Modifier.height(spacerHeight))
         Button(onClick = {
             requestSent.value = true
+            val recipients = viewModel.getRecipients(csvFilePath)
             val emailModel = EmailModel(
                 subject = emailSubject,
                 body = emailBody,
-                csvFilePath = csvFilePath,
+                recipients = recipients,
                 attachmentFilePath = attachmentFilePath,
             )
             coroutineScope.launch {
@@ -95,21 +96,21 @@ fun EmailSendForm(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ErrorDialog(emailSendError: MutableState<EmailError?>) {
+private fun ErrorDialog(emailSendError: MutableState<List<EmailError>?>) {
     if (emailSendError.value != null) {
-        val error = emailSendError.value
+        val errors = emailSendError.value
+
+        val errorMessage = errors?.map { "${it.recipient.emailAddress} : ${it.description};" }
+            ?.joinToString() ?: "Unknown Error"
+
         AlertDialog(
             modifier = Modifier.width(dialogWidth),
             onDismissRequest = {},
             title = {
-                Text(
-                    text = "Error",
-                )
+                Text(text = "Error")
             },
             text = {
-                Text(
-                    text = error?.description ?: "Unknown Error",
-                )
+                Text(text = errorMessage)
             },
             confirmButton = {
                 Button(

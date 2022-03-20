@@ -1,6 +1,6 @@
 package name.kayley.emailsender.model
 
 data class EmailError(
-    val code: Int,
+    val recipient: EmailRecipient,
     val description: String
 )
