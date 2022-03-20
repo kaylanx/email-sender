@@ -5,9 +5,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import name.kayley.emailsender.components.FileChooser
 import name.kayley.emailsender.model.EmailError
 import name.kayley.emailsender.model.EmailModel
@@ -22,8 +19,6 @@ import name.kayley.emailsender.viewmodel.EmailSendViewModel
 fun EmailSendForm(
     viewModel: EmailSendViewModel = EmailSendViewModel(SunEmailProvider())
 ) {
-    val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     val requestSent = remember { mutableStateOf(false) }
     val emailSent = remember { mutableStateOf(false) }
     val emailSendError = remember { mutableStateOf<List<EmailError>?>(null) }
@@ -69,19 +64,17 @@ fun EmailSendForm(
                 recipients = recipients,
                 attachmentFilePath = attachmentFilePath,
             )
-            coroutineScope.launch {
-                viewModel.sendEmail(
-                    email = emailModel,
-                    onMessageSent = {
-                        emailSent.value = true
-                        requestSent.value = false
-                    },
-                    onMessageError = {
-                        emailSendError.value = it
-                        requestSent.value = false
-                    }
-                )
-            }
+            viewModel.sendEmail(
+                email = emailModel,
+                onMessageSent = {
+                    emailSent.value = true
+                    requestSent.value = false
+                },
+                onMessageError = {
+                    emailSendError.value = it
+                    requestSent.value = false
+                }
+            )
         }) {
             if (requestSent.value) {
                 CircularProgressIndicator(
@@ -100,7 +93,8 @@ private fun ErrorDialog(emailSendError: MutableState<List<EmailError>?>) {
     if (emailSendError.value != null) {
         val errors = emailSendError.value
 
-        val errorMessage = errors?.joinToString { "${it.recipient.emailAddress} : ${it.description};" } ?: "Unknown Error"
+        val errorMessage =
+            errors?.joinToString { "${it.recipient.emailAddress} : ${it.description};" } ?: "Unknown Error"
 
         AlertDialog(
             modifier = Modifier.width(dialogWidth),

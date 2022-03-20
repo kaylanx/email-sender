@@ -1,5 +1,9 @@
 package name.kayley.emailsender.viewmodel
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import name.kayley.emailsender.mappers.CsvToRecipientMapper
 import name.kayley.emailsender.model.EmailError
 import name.kayley.emailsender.model.EmailModel
@@ -9,18 +13,23 @@ import java.io.File
 
 
 class EmailSendViewModel(
-    private val emailProvider: EmailProvider
+    private val emailProvider: EmailProvider,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
+    private val coroutineScope = CoroutineScope(dispatcher)
+
     fun sendEmail(
         email: EmailModel,
         onMessageSent: () -> Unit,
         onMessageError: (errors: List<EmailError>) -> Unit
     ) {
-        emailProvider.sendEmail(
-            emailModel = email,
-            onMessageSent = onMessageSent,
-            onMessageFailed = onMessageError
-        )
+        coroutineScope.launch {
+            emailProvider.sendEmail(
+                emailModel = email,
+                onMessageSent = onMessageSent,
+                onMessageFailed = onMessageError
+            )
+        }
     }
 
     fun getRecipients(csvFilePath: String): List<EmailRecipient> {
