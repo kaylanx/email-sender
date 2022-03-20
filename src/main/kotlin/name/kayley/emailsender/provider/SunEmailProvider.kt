@@ -29,25 +29,28 @@ class SunEmailProvider : EmailProvider {
             }
         }
 
+        val lineSeparator = System.getProperty("line.separator")
+
         val session: Session = Session.getInstance(properties, passwordAuthentication)
 
         val emailErrors = mutableListOf<EmailError>()
         emailModel.recipients.forEach { emailRecipient ->
             try {
                 val message = MimeMessage(session)
-                message.setFrom(
-                    InternetAddress(
-                        properties.getProperty("email.username"),
-                        properties.getProperty("email.fromname")
+                with(message) {
+                    setFrom(
+                        InternetAddress(
+                            properties.getProperty("email.username"),
+                            properties.getProperty("email.fromname")
+                        )
                     )
-                )
-                message.setRecipients(
-                    Message.RecipientType.TO,
-                    arrayOf(InternetAddress(emailRecipient.emailAddress, emailRecipient.name))
-                )
-                message.subject = emailModel.subject
+                    setRecipients(
+                        Message.RecipientType.TO,
+                        arrayOf(InternetAddress(emailRecipient.emailAddress, emailRecipient.name))
+                    )
+                    subject = emailModel.subject
+                }
 
-                val lineSeparator = System.getProperty("line.separator")
                 var msg = emailModel.body
                     .replace("#NAME", emailRecipient.name)
                     .replace(lineSeparator, "<br/>")
@@ -56,7 +59,8 @@ class SunEmailProvider : EmailProvider {
 
                 val mimeBodyPart = MimeBodyPart()
                 mimeBodyPart.setContent(msg, "text/html; charset=utf-8")
-                val multipart: Multipart = MimeMultipart()
+
+                val multipart = MimeMultipart()
                 multipart.addBodyPart(mimeBodyPart)
 
                 print("attempting to attach ${emailModel.attachmentFilePaths}")
