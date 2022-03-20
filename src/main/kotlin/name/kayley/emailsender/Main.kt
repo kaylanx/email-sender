@@ -25,7 +25,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Email Sender",
-        state = rememberWindowState(width = 800.dp, height = 700.dp)
+        state = rememberWindowState(width = 800.dp, height = 750.dp)
     ) {
         val propertiesFile = "${System.getProperty("user.home")}/emailsender/config.properties"
 

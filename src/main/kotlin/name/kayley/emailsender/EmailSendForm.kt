@@ -11,7 +11,7 @@ import name.kayley.emailsender.model.EmailModel
 import name.kayley.emailsender.provider.SunEmailProvider
 import name.kayley.emailsender.theme.SimpleTheme.dialogWidth
 import name.kayley.emailsender.theme.SimpleTheme.formPadding
-import name.kayley.emailsender.theme.SimpleTheme.spacerHeight
+import name.kayley.emailsender.theme.SimpleTheme.spacer
 import name.kayley.emailsender.theme.SimpleTheme.textAreaHeight
 import name.kayley.emailsender.viewmodel.EmailSendViewModel
 
@@ -26,7 +26,8 @@ fun EmailSendForm(
     var emailBody by remember { mutableStateOf("") }
     var emailSubject by remember { mutableStateOf("") }
 
-    var attachmentFilePath by remember { mutableStateOf("") }
+    var attachmentFilePath by remember { mutableStateOf<String?>(null) }
+    var attachment2FilePath by remember { mutableStateOf<String?>(null) }
     var csvFilePath by remember { mutableStateOf("") }
 
     EmailsSentDialog(emailSent = emailSent)
@@ -36,10 +37,13 @@ fun EmailSendForm(
         modifier = Modifier.fillMaxWidth().padding(formPadding)
     ) {
         FileChooser(buttonText = "Choose csv file", defaultFilePathText = "Csv File path") {
-            csvFilePath = it
+            csvFilePath = it ?: ""
         }
         FileChooser(buttonText = "Choose email attachment file", defaultFilePathText = "Attachment File path") {
             attachmentFilePath = it
+        }
+        FileChooser(buttonText = "Choose 2nd email attachment file", defaultFilePathText = "Attachment File path") {
+            attachment2FilePath = it
         }
         OutlinedTextField(value = emailSubject, onValueChange = {
             emailSubject = it
@@ -54,15 +58,25 @@ fun EmailSendForm(
             modifier = Modifier.height(textAreaHeight)
                 .fillMaxWidth(),
         )
-        Spacer(modifier = Modifier.height(spacerHeight))
+        Spacer(modifier = Modifier.height(spacer))
         Button(onClick = {
             requestSent.value = true
             val recipients = viewModel.getRecipients(csvFilePath)
+
+            val attachments = mutableListOf<String>()
+            if (attachmentFilePath != null) {
+                attachments.add(attachmentFilePath!!)
+            }
+
+            if (attachment2FilePath != null) {
+                attachments.add(attachment2FilePath!!)
+            }
+
             val emailModel = EmailModel(
                 subject = emailSubject,
                 body = emailBody,
                 recipients = recipients,
-                attachmentFilePath = attachmentFilePath,
+                attachmentFilePaths = attachments,
             )
             viewModel.sendEmail(
                 email = emailModel,

@@ -4,5 +4,5 @@ data class EmailModel(
     val subject: String,
     val body: String,
     val recipients: List<EmailRecipient>,
-    val attachmentFilePath: String?,
+    val attachmentFilePaths: List<String>?,
 )

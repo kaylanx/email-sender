@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.AwtWindow
+import name.kayley.emailsender.theme.SimpleTheme.spacer
 import java.awt.FileDialog
 import java.awt.Frame
 
@@ -15,9 +16,8 @@ import java.awt.Frame
 fun FileChooser(
     buttonText: String,
     defaultFilePathText: String,
-    onFileChosen: ((String) -> Unit)?
+    onFileChosen: ((String?) -> Unit)?
 ) {
-
     var filePath by remember { mutableStateOf(defaultFilePathText) }
     var fileDialogOpen by remember { mutableStateOf(false) }
 
@@ -39,11 +39,18 @@ fun FileChooser(
         horizontalArrangement = Arrangement.End
     ) {
         Text(filePath)
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(spacer))
         Button(onClick = {
             fileDialogOpen = true
         }) {
             Text(buttonText)
+        }
+        Spacer(modifier = Modifier.width(spacer))
+        Button(onClick = {
+            filePath = defaultFilePathText
+            onFileChosen?.invoke(null)
+        }) {
+            Text("Clear")
         }
     }
 }

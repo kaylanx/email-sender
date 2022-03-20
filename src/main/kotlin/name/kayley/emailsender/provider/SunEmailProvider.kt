@@ -59,10 +59,10 @@ class SunEmailProvider : EmailProvider {
                 val multipart: Multipart = MimeMultipart()
                 multipart.addBodyPart(mimeBodyPart)
 
-                if (emailModel.attachmentFilePath != null) {
-                    print("attempting to attach ${emailModel.attachmentFilePath}")
+                print("attempting to attach ${emailModel.attachmentFilePaths}")
+                emailModel.attachmentFilePaths?.forEach { filePath ->
                     val attachmentPart = MimeBodyPart()
-                    attachmentPart.attachFile(File(emailModel.attachmentFilePath))
+                    attachmentPart.attachFile(File(filePath))
                     multipart.addBodyPart(attachmentPart)
                 }
 
