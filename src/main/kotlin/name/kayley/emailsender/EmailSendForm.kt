@@ -31,8 +31,8 @@ fun EmailSendForm(
     var emailBody by remember { mutableStateOf("") }
     var emailSubject by remember { mutableStateOf("") }
 
-    var attachmentToSend by remember { mutableStateOf("") }
-    var csvFileChosen by remember { mutableStateOf("") }
+    var attachmentFilePath by remember { mutableStateOf("") }
+    var csvFilePath by remember { mutableStateOf("") }
 
     EmailsSentDialog(emailSent = emailSent)
     ErrorDialog(emailSendError = emailSendError)
@@ -41,10 +41,10 @@ fun EmailSendForm(
         modifier = Modifier.fillMaxWidth().padding(formPadding)
     ) {
         FileChooser(buttonText = "Choose csv file", defaultFilePathText = "Csv File path") {
-            csvFileChosen = it
+            csvFilePath = it
         }
         FileChooser(buttonText = "Choose email attachment file", defaultFilePathText = "Attachment File path") {
-            attachmentToSend = it
+            attachmentFilePath = it
         }
         OutlinedTextField(value = emailSubject, onValueChange = {
             emailSubject = it
@@ -62,7 +62,12 @@ fun EmailSendForm(
         Spacer(modifier = Modifier.height(spacerHeight))
         Button(onClick = {
             requestSent.value = true
-            val emailModel = EmailModel(subject = emailSubject, body = emailBody)
+            val emailModel = EmailModel(
+                subject = emailSubject,
+                body = emailBody,
+                csvFilePath = csvFilePath,
+                attachmentFilePath = attachmentFilePath,
+            )
             coroutineScope.launch {
                 viewModel.sendEmail(
                     email = emailModel,

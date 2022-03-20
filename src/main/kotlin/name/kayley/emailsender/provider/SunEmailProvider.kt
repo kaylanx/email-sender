@@ -15,6 +15,7 @@ class SunEmailProvider : EmailProvider {
         emailModel: EmailModel,
         onMessageSent: () -> Unit,
         onMessageError: (error: EmailError) -> Unit
+        onMessageFailed: (error: EmailError) -> Unit
     ) {
 
         val passwordAuthentication = object : Authenticator() {
@@ -47,7 +48,7 @@ class SunEmailProvider : EmailProvider {
             onMessageSent()
         } catch (me: MessagingException) {
             me.printStackTrace()
-            onMessageError(EmailError(code = 999, description = me.message ?: "UNKNOWN"))
+            onMessageFailed(EmailError(code = 999, description = me.message ?: "UNKNOWN"))
         }
     }
 
