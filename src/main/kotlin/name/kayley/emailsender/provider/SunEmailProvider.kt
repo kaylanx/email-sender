@@ -2,8 +2,8 @@ package name.kayley.emailsender.provider
 
 import name.kayley.emailsender.model.EmailError
 import name.kayley.emailsender.model.EmailModel
+import name.kayley.emailsender.properties
 import java.io.File
-import java.util.*
 import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeBodyPart
@@ -22,17 +22,25 @@ class SunEmailProvider : EmailProvider {
         print("emailModel = $emailModel")
         val passwordAuthentication = object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication("username", "password")
+                return PasswordAuthentication(
+                    properties.getProperty("email.username"),
+                    properties.getProperty("email.password")
+                )
             }
         }
 
-        val session: Session = Session.getInstance(getProperties(), passwordAuthentication)
+        val session: Session = Session.getInstance(properties, passwordAuthentication)
 
         val emailErrors = mutableListOf<EmailError>()
         emailModel.recipients.forEach { emailRecipient ->
             try {
                 val message = MimeMessage(session)
-                message.setFrom(InternetAddress("andykayley@gmail.com", "Andy Kayley"))
+                message.setFrom(
+                    InternetAddress(
+                        properties.getProperty("email.username"),
+                        properties.getProperty("email.fromname")
+                    )
+                )
                 message.setRecipients(
                     Message.RecipientType.TO,
                     arrayOf(InternetAddress(emailRecipient.emailAddress, emailRecipient.name))
@@ -71,15 +79,5 @@ class SunEmailProvider : EmailProvider {
         } else {
             onMessageSent()
         }
-    }
-
-    private fun getProperties(): Properties {
-        val properties = Properties()
-        properties["mail.smtp.auth"] = true
-        properties["mail.smtp.starttls.enable"] = "true"
-        properties["mail.smtp.host"] = "smtp.gmail.com"
-        properties["mail.smtp.port"] = "587"
-        properties["mail.smtp.ssl.trust"] = "smtp.gmail.com"
-        return properties
     }
 }

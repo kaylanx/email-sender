@@ -100,8 +100,7 @@ private fun ErrorDialog(emailSendError: MutableState<List<EmailError>?>) {
     if (emailSendError.value != null) {
         val errors = emailSendError.value
 
-        val errorMessage = errors?.map { "${it.recipient.emailAddress} : ${it.description};" }
-            ?.joinToString() ?: "Unknown Error"
+        val errorMessage = errors?.joinToString { "${it.recipient.emailAddress} : ${it.description};" } ?: "Unknown Error"
 
         AlertDialog(
             modifier = Modifier.width(dialogWidth),

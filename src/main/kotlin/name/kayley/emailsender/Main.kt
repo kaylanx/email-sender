@@ -6,9 +6,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import java.io.FileInputStream
+import java.util.*
+
+lateinit var properties: Properties
 
 @Composable
 @Preview
@@ -24,6 +27,14 @@ fun main() = application {
         title = "Email Sender",
         state = rememberWindowState(width = 800.dp, height = 700.dp)
     ) {
+        val propertiesFile = "${System.getProperty("user.home")}/emailsender/config.properties"
+
+        val fileInput = FileInputStream(propertiesFile)
+        properties = Properties().also {
+            it.load(fileInput)
+        }
+
+        print(properties)
         App()
     }
 }
