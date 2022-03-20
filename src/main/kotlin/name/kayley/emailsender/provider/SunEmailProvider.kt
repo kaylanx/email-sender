@@ -46,6 +46,7 @@ class SunEmailProvider : EmailProvider {
             Transport.send(message)
             onMessageSent()
         } catch (me: MessagingException) {
+            me.printStackTrace()
             onMessageError(EmailError(code = 999, description = me.message ?: "UNKNOWN"))
         }
     }
@@ -54,9 +55,9 @@ class SunEmailProvider : EmailProvider {
         val properties = Properties()
         properties["mail.smtp.auth"] = true
         properties["mail.smtp.starttls.enable"] = "true"
-        properties["mail.smtp.host"] = "smtp.mailtrap.io"
-        properties["mail.smtp.port"] = "25"
-        properties["mail.smtp.ssl.trust"] = "smtp.mailtrap.io"
+        properties["mail.smtp.host"] = "smtp.gmail.com"
+        properties["mail.smtp.port"] = "587"
+        properties["mail.smtp.ssl.trust"] = "smtp.gmail.com"
         return properties
     }
 }
